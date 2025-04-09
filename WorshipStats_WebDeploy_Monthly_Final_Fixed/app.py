@@ -43,7 +43,8 @@ if uploaded_files:
     else:
         st.success("✅ 表單成功解析！開始分析...")
 
-        stats_df, potential_df, heavy_df, source_df = calculate_statistics(all_data, weights)
+        stats_df, potential_df, heavy_df, source_df, month_df = calculate_statistics(all_data, weights)
+
 
         st.subheader("📄 統計報表預覽")
         sort_option = st.selectbox("排序依據：", ["總次數", "加權分數"], index=0)
