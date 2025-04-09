@@ -56,8 +56,8 @@ if uploaded_files:
         with st.expander("🔥 負擔過重人員清單"):
             st.dataframe(heavy_df, use_container_width=True)
 
-        with st.expander("📘 CL3：加權來源明細"):
-    st.dataframe(source_df, use_container_width=True)
+        with st.expander("📘 CL3：加權來源明細"):    
+            st.dataframe(source_df, use_container_width=True)
     st.dataframe(source_df, use_container_width=True)
 
     st.dataframe(source_df, use_container_width=True)
