@@ -56,19 +56,8 @@ if uploaded_files:
         with st.expander("🔥 負擔過重人員清單"):
             st.dataframe(heavy_df, use_container_width=True)
 
-        with st.expander("📘 CL3：加權來源明細"):    
+        with st.expander("📘 CL3：加權來源明細"):
             st.dataframe(source_df, use_container_width=True)
-    st.dataframe(source_df, use_container_width=True)
-
-    st.dataframe(source_df, use_container_width=True)
-
-with st.expander("📆 CL4：每月服事統計"):
-    st.dataframe(month_df, use_container_width=True)
-            with st.expander("📘 CL3：加權來源明細"):
-    st.dataframe(source_df, use_container_width=True)
-
-    st.dataframe(source_df, use_container_width=True)
-
 
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
@@ -76,7 +65,6 @@ with st.expander("📆 CL4：每月服事統計"):
             potential_df.to_excel(writer, sheet_name="潛力人員", index=False)
             heavy_df.to_excel(writer, sheet_name="負擔人員", index=False)
             source_df.to_excel(writer, sheet_name="加權明細", index=False)
-    month_df.to_excel(writer, sheet_name="月份統計", index=False)
 
         st.download_button(
             label="📥 下載統計報表 Excel",
