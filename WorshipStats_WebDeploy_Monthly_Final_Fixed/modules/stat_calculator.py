@@ -53,7 +53,7 @@ def calculate_statistics(df, weights):
         cols = row.drop(labels=["聚會名稱", "來源檔案"], errors='ignore')
 
         for col_name, cell in cols.items():
-            final_weight = base_weight * bonus_rate if any(k in col_name for k in ['MD', 'Band Leader', 'Vocal Leader']) else base_weight
+            final_weight = base_weight * bonus_rate if any(k in str(col_name) for k in ['MD', 'Band Leader', 'Vocal Leader']) else base_weight
             for n in split_names(cell):
                 source_counter[n][match_type] += final_weight
                 monthly_counter[n][month]["次數"] += 1
