@@ -1,4 +1,3 @@
-
 import pandas as pd
 from collections import Counter, defaultdict
 
@@ -21,6 +20,8 @@ def extract_month(filename):
     return "未知"
 
 def calculate_statistics(df, weights):
+    bonus_rate = weights.get("MD/BL/VL 加權倍數", 1.0)
+
     counts = flatten_people(df)
     df_people = pd.DataFrame(counts.items(), columns=["姓名", "總次數"])
 
@@ -33,7 +34,7 @@ def calculate_statistics(df, weights):
         "早上飽": ["早上飽"]
     }
 
-    source_counter = defaultdict(lambda: defaultdict(int))
+    source_counter = defaultdict(lambda: defaultdict(float))
     monthly_counter = defaultdict(lambda: defaultdict(lambda: {"次數": 0, "加權": 0.0}))
 
     for _, row in df.iterrows():
@@ -47,13 +48,18 @@ def calculate_statistics(df, weights):
                 break
         if not match_type:
             continue
-        weight = weights.get(match_type, 1)
-        for name in row.drop(labels=["聚會名稱", "來源檔案"], errors='ignore'):
-            for n in split_names(name):
-                source_counter[n][match_type] += 1 * weight
-                monthly_counter[n][month]["次數"] += 1
-                monthly_counter[n][month]["加權"] += 1 * weight
 
+        base_weight = weights.get(match_type, 1)
+        cols = row.drop(labels=["聚會名稱", "來源檔案"], errors='ignore')
+
+        for col_name, cell in cols.items():
+            final_weight = base_weight * bonus_rate if any(k in col_name for k in ['MD', 'Band Leader', 'Vocal Leader']) else base_weight
+            for n in split_names(cell):
+                source_counter[n][match_type] += final_weight
+                monthly_counter[n][month]["次數"] += 1
+                monthly_counter[n][month]["加權"] += final_weight
+
+    # 加權來源明細表
     raw_df = pd.DataFrame.from_dict(source_counter, orient='index').fillna(0).astype(float)
     source_df = raw_df.copy()
     for col in source_df.columns:
@@ -65,6 +71,7 @@ def calculate_statistics(df, weights):
     raw_df = raw_df.reset_index().rename(columns={"index": "姓名"})
     source_df = pd.merge(raw_df, source_df, on="姓名", suffixes=("_原始", "_加權"))
 
+    # 總表與篩選
     df_people = pd.merge(df_people, source_df[["姓名", "加權總分"]], on="姓名", how="left")
     df_people = df_people.rename(columns={"加權總分": "加權分數"})
 
@@ -72,7 +79,7 @@ def calculate_statistics(df, weights):
     potential = df_people[(df_people["總次數"] <= median) & (df_people["總次數"] >= 2)].copy()
     heavy = df_people[(df_people["加權分數"] > df_people["加權分數"].quantile(0.9)) | (df_people["總次數"] > 15)].copy()
 
-    # 組合月份統計表
+    # 月份統計
     all_months = sorted({m for person in monthly_counter.values() for m in person})
     month_rows = []
     for name in monthly_counter:
