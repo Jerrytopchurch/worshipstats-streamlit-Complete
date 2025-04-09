@@ -58,6 +58,9 @@ if uploaded_files:
 
         with st.expander("📘 CL3：加權來源明細"):
     st.dataframe(source_df, use_container_width=True)
+    st.dataframe(source_df, use_container_width=True)
+
+    st.dataframe(source_df, use_container_width=True)
 
 with st.expander("📆 CL4：每月服事統計"):
     st.dataframe(month_df, use_container_width=True)
