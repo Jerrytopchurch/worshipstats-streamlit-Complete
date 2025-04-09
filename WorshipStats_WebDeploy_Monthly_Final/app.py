@@ -67,6 +67,8 @@ with st.expander("📆 CL4：每月服事統計"):
             with st.expander("📘 CL3：加權來源明細"):
     st.dataframe(source_df, use_container_width=True)
 
+    st.dataframe(source_df, use_container_width=True)
+
 
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
